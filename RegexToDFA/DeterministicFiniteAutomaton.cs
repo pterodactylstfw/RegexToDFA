@@ -23,12 +23,28 @@ namespace RegexToDFA
             states.Add(initialState);
         }
 
-        
-        public bool verifyAutomaton() {}
-        
+
+        public bool verifyAutomaton()
+        {
+            if (!states.Contains(initialState)) return false;
+            if(!finalStates.IsSubsetOf(states)) return false;
+            //if all transitions initial states are in states
+            foreach (var transition in transitions)
+            {
+                if (!states.Contains(transition.Key)) return false;
+                foreach (var pair in transition.Value)
+                {
+                    if (!symbols.Contains(pair.Key)) return false;
+                    if (!states.Contains(pair.Value)) return false;
+                }
+            }
+            return true;
+            
+        }
+
         public void printAutomaton()
         {}
-        
+
         public bool checkWord() {}
     }
 }
