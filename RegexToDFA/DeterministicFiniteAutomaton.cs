@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RegexToDFA
 {
@@ -43,8 +44,66 @@ namespace RegexToDFA
         }
 
         public void printAutomaton()
-        {}
+        {
+            // ordonam simbolurile si starile pentru afisare
+            var sortedSymbols = symbols.OrderBy(s => s).ToList();
+            var sortedStates = states.OrderBy(s => s).ToList();
+            
+            Console.Write($"{"State", -8} |"); 
+            foreach (var sym in sortedSymbols)
+            {
+                Console.Write($" {sym, -5} |"); 
+            }
+            Console.WriteLine();
+            Console.WriteLine(new string('-', 10 + sortedSymbols.Count * 8));
+            
+            foreach (var state in sortedStates)
+            {
+                string prefix = "";
+                if (state == initialState) prefix += "->"; // start
+                if (finalStates.Contains(state)) prefix += "*"; // final
+        
+                string stateLabel = prefix + state.ToString();
+                Console.Write($"{stateLabel, -8} |");
+                
+                foreach (var sym in sortedSymbols)
+                {
+                    // verificam daca exista tranzitie pentru simbolul curent
+                    if (transitions.ContainsKey(state) && transitions[state].ContainsKey(sym))
+                    {
+                        int nextState = transitions[state][sym];
+                        Console.Write($" {nextState, -5} |");
+                    }
+                    else
+                    {
+                        Console.Write($" {"-", -5} |"); // - daca nu exista tranzitie
+                    }
+                }
+                Console.WriteLine(); 
+            }
+        }
 
-        public bool checkWord() {}
+        public bool checkWord(String word)
+        {
+            while (word.Length > 0)
+            {
+                char currentChar = word[0];
+                word = word.Substring(1);
+
+                // verificam daca simbolul curent este valid
+                if (!symbols.Contains(currentChar))
+                {
+                    return false; 
+                }
+
+                if (!transitions.ContainsKey(initialState) || !transitions[initialState].ContainsKey(currentChar)) 
+                {
+                    return false; // tranzitie inexistenta
+                }
+
+                initialState = transitions[initialState][currentChar];
+            }
+            return finalStates.Contains(initialState);
+        }
     }
 }
