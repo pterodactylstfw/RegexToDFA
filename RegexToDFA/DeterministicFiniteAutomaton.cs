@@ -7,21 +7,18 @@ namespace RegexToDFA
     public class DeterministicFiniteAutomaton
     {
 
-        private HashSet<int> states { get; set; }
-        private HashSet<char> symbols { get; set; }
-        private Dictionary<int, Dictionary<char, int>> transitions { get; set; }
-        private int initialState { get; set; }
-        private HashSet<int> finalStates { get; set; }
+        public HashSet<int> states { get; set; }
+        public HashSet<char> symbols { get; set; }
+        public Dictionary<int, Dictionary<char, int>> transitions { get; set; }
+        public int initialState { get; set; }
+        public HashSet<int> finalStates { get; set; }
 
-        public DeterministicFiniteAutomaton(int q0)
+        public DeterministicFiniteAutomaton()
         {
             states = new HashSet<int>();
             symbols = new HashSet<char>();
             transitions = new Dictionary<int, Dictionary<char, int>>();
-            initialState = q0;
             finalStates = new HashSet<int>();
-            
-            states.Add(initialState);
         }
 
 
@@ -85,25 +82,21 @@ namespace RegexToDFA
 
         public bool checkWord(String word)
         {
-            while (word.Length > 0)
+            int currentState = initialState;
+
+            foreach (char c in word)
             {
-                char currentChar = word[0];
-                word = word.Substring(1);
+                if (!symbols.Contains(c)) return false;
 
-                // verificam daca simbolul curent este valid
-                if (!symbols.Contains(currentChar))
+                if (!transitions.ContainsKey(currentState) || !transitions[currentState].ContainsKey(c))
                 {
-                    return false; 
+                    return false; // Blocaj
                 }
 
-                if (!transitions.ContainsKey(initialState) || !transitions[initialState].ContainsKey(currentChar)) 
-                {
-                    return false; // tranzitie inexistenta
-                }
-
-                initialState = transitions[initialState][currentChar];
+                currentState = transitions[currentState][c];
             }
-            return finalStates.Contains(initialState);
+
+            return finalStates.Contains(currentState);
         }
     }
 }
