@@ -8,9 +8,9 @@ namespace RegexToDFA
         {
             Console.WriteLine("Hello World!");
             string regex = "ab|c";
-            string output = Regex.concatenationHandle(regex);
+            string output = RegexUtils.concatenationHandle(regex);
             Console.WriteLine(output);
-            string postfix = Regex.toPostfixForm(output);
+            string postfix = RegexUtils.toPostfixForm(output);
             Console.WriteLine(postfix);
         }
     }

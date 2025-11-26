@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RegexToDFA
 {
-    public class Regex
+    public class RegexUtils
     {
         /*
         Functie care adauga . la concatenare
@@ -44,7 +44,7 @@ namespace RegexToDFA
         {
             switch (op)
             {
-                case '*': return 4;
+                case '*': return 3;
                 case '+': return 3;
                 case '.':  return 2;
                 case '|':  return 1;
@@ -91,5 +91,67 @@ namespace RegexToDFA
 
             return output;
         }
+
+        public class TreeNode
+        {
+            public char symbol { get; set; }
+            public TreeNode left { get; set; }
+            public TreeNode right { get; set; }
+            
+            public TreeNode(char symb, TreeNode l = null, TreeNode r = null)
+            {
+                symbol = symb;
+                left = l;
+                right = r;
+            }
+        }
+
+        public static TreeNode syntaxTree(string regexPostfix)
+        {
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+
+            foreach (char c in regexPostfix)
+            {
+                if(Char.IsLetter(c))
+                    stack.Push(new TreeNode(c));
+                else if (c == '*' || c == '+')
+                {
+                    TreeNode child = stack.Pop();
+                    stack.Push(new TreeNode(c, null, child));
+                }
+                else if (c == '|' || c == '.')
+                {
+                    TreeNode rightChild =  stack.Pop();
+                    TreeNode leftChild = stack.Pop();
+                    stack.Push(new TreeNode(c, leftChild, rightChild));
+                }
+            }
+            
+            return stack.Pop();
+        }
+
+        public static void printSyntaxTree(TreeNode root, string indent = "", bool isLast = true)
+        {
+            if (root != null)
+            {
+                Console.Write(indent);
+                if (isLast)
+                {
+                    Console.Write("└─");
+                    indent += "  ";
+                }
+                else
+                {
+                    Console.Write("├─");
+                    indent += "| ";
+                }
+                Console.WriteLine(root.symbol);
+                printSyntaxTree(root.left, indent, root.right == null);
+                printSyntaxTree(root.right, indent, true);
+                
+            }
+        }
+        
+        
     }
 }
