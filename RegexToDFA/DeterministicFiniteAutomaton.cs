@@ -9,7 +9,7 @@ namespace RegexToDFA
 
         public HashSet<int> states { get; set; }
         public HashSet<char> symbols { get; set; }
-        public Dictionary<int, Dictionary<char, int>> transitions { get; set; }
+        public List<Transition> transitions { get; set; }
         public int initialState { get; set; }
         public HashSet<int> finalStates { get; set; }
 
@@ -17,7 +17,7 @@ namespace RegexToDFA
         {
             states = new HashSet<int>();
             symbols = new HashSet<char>();
-            transitions = new Dictionary<int, Dictionary<char, int>>();
+            transitions = new List<Transition>();
             finalStates = new HashSet<int>();
         }
 
@@ -26,15 +26,12 @@ namespace RegexToDFA
         {
             if (!states.Contains(initialState)) return false;
             if(!finalStates.IsSubsetOf(states)) return false;
-            //if all transitions initial states are in states
+            
             foreach (var transition in transitions)
             {
-                if (!states.Contains(transition.Key)) return false;
-                foreach (var pair in transition.Value)
-                {
-                    if (!symbols.Contains(pair.Key)) return false;
-                    if (!states.Contains(pair.Value)) return false;
-                }
+                if (!states.Contains(transition.fromState)) return false;
+                if (!states.Contains(transition.toState)) return false;
+                if (!symbols.Contains(transition.symbol)) return false;
             }
             return true;
             
@@ -66,10 +63,10 @@ namespace RegexToDFA
                 foreach (var sym in sortedSymbols)
                 {
                     // verificam daca exista tranzitie pentru simbolul curent
-                    if (transitions.ContainsKey(state) && transitions[state].ContainsKey(sym))
+                    var transition = transitions.FirstOrDefault(t => t.fromState == state && t.symbol == sym);
+                    if (transition != null)
                     {
-                        int nextState = transitions[state][sym];
-                        Console.Write($" {nextState, -5} |");
+                        Console.Write($" {transition.toState, -5} |");
                     }
                     else
                     {
@@ -86,14 +83,12 @@ namespace RegexToDFA
 
             foreach (char c in word)
             {
-                if (!symbols.Contains(c)) return false;
-
-                if (!transitions.ContainsKey(currentState) || !transitions[currentState].ContainsKey(c))
+                var transition = transitions.FirstOrDefault(t => t.fromState == currentState && t.symbol == c);
+                if (transition == null)
                 {
-                    return false; // Blocaj
+                    return false; 
                 }
-
-                currentState = transitions[currentState][c];
+                currentState = transition.toState;
             }
 
             return finalStates.Contains(currentState);
