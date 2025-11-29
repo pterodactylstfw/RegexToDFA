@@ -4,110 +4,110 @@ namespace RegexToDFA
 {
     public class LambdaAutomaton
     {
-        public const char lambda = '$';
+        public const char Lambda = '$';
 
-        public int initialState { get; set; }
-        public int finalState { get; set; }
-        public List<Transition> transitions { get; set; }
+        public int InitialState { get; set; }
+        public int FinalState { get; set; }
+        public List<Transition> Transitions { get; set; }
         
-        public static int stateCount = 0;
+        public static int StateCount = 0;
         
         public LambdaAutomaton()
         {
-            transitions = new List<Transition>();
+            Transitions = new List<Transition>();
         }
         
         public LambdaAutomaton(char symbol)
         {
-            initialState = stateCount++;
-            finalState = stateCount++;
-            transitions = new List<Transition>();
+            InitialState = StateCount++;
+            FinalState = StateCount++;
+            Transitions = new List<Transition>();
             
-            transitions.Add(new Transition(initialState, finalState, symbol));
+            Transitions.Add(new Transition(InitialState, FinalState, symbol));
         }
 
         public LambdaAutomaton(int initialState, int finalState, List<Transition> transitions)
         {
-            this.initialState = initialState;
-            this.finalState = finalState;
-            this.transitions = transitions;
+            this.InitialState = initialState;
+            this.FinalState = finalState;
+            this.Transitions = transitions;
         }
         
-        public static void resetStateCount()
+        public static void ResetStateCount()
         {
-            stateCount = 0;
+            StateCount = 0;
         }
 
         // operatorul | - alternarea(SAU)
         public static LambdaAutomaton operator |(LambdaAutomaton left, LambdaAutomaton right)
         {
-            int newStart = stateCount++;
-            int newEnd = stateCount++;
+            int newStart = StateCount++;
+            int newEnd = StateCount++;
             List<Transition> newTransitions = new List<Transition>();
 
-            newTransitions.AddRange(left.transitions);
-            newTransitions.AddRange(right.transitions);
+            newTransitions.AddRange(left.Transitions);
+            newTransitions.AddRange(right.Transitions);
             
-            newTransitions.Add(new Transition(newStart, left.initialState, lambda));
-            newTransitions.Add(new Transition(newStart, right.initialState, lambda));
-            newTransitions.Add(new Transition(left.finalState, newEnd, lambda));
-            newTransitions.Add(new Transition(right.finalState, newEnd, lambda));
+            newTransitions.Add(new Transition(newStart, left.InitialState, Lambda));
+            newTransitions.Add(new Transition(newStart, right.InitialState, Lambda));
+            newTransitions.Add(new Transition(left.FinalState, newEnd, Lambda));
+            newTransitions.Add(new Transition(right.FinalState, newEnd, Lambda));
             
             return new LambdaAutomaton(newStart, newEnd, newTransitions);
         }
         
         // operatorul . - concatenarea
-        public static LambdaAutomaton concatenation(LambdaAutomaton left, LambdaAutomaton right)
+        public static LambdaAutomaton Concatenation(LambdaAutomaton left, LambdaAutomaton right)
         {
             List<Transition> newTransitions = new List<Transition>();
-            newTransitions.AddRange(left.transitions);
-            foreach (var trans in right.transitions)
+            newTransitions.AddRange(left.Transitions);
+            foreach (var trans in right.Transitions)
             {
-                int newFrom = trans.fromState;
-                int newTo = trans.toState;
+                int newFrom = trans.FromState;
+                int newTo = trans.ToState;
                 
-                if (newFrom == right.initialState)
+                if (newFrom == right.InitialState)
                 {
-                    newFrom = left.finalState;
+                    newFrom = left.FinalState;
                 }
                 
-                if (newTo == right.initialState)
+                if (newTo == right.InitialState)
                 {
-                    newTo = left.finalState;
+                    newTo = left.FinalState;
                 }
                 
-                newTransitions.Add(new Transition(newFrom, newTo, trans.symbol));
+                newTransitions.Add(new Transition(newFrom, newTo, trans.Symbol));
             }
-            return new LambdaAutomaton(left.initialState, right.finalState, newTransitions);
+            return new LambdaAutomaton(left.InitialState, right.FinalState, newTransitions);
         }
         
         // operatorul *
-        public void kleeneStar()
+        public void KleeneStar()
         {
-            int newStart = stateCount++;
-            int newEnd = stateCount++;
+            int newStart = StateCount++;
+            int newEnd = StateCount++;
             
-            transitions.Add(new Transition(newStart, initialState, lambda));
-            transitions.Add(new Transition(newStart, newEnd, lambda));
-            transitions.Add(new Transition(finalState, newEnd, lambda));
-            transitions.Add(new Transition(finalState, initialState, lambda));
+            Transitions.Add(new Transition(newStart, InitialState, Lambda));
+            Transitions.Add(new Transition(newStart, newEnd, Lambda));
+            Transitions.Add(new Transition(FinalState, newEnd, Lambda));
+            Transitions.Add(new Transition(FinalState, InitialState, Lambda));
 
-            initialState = newStart;
-            finalState = newEnd;
+            InitialState = newStart;
+            FinalState = newEnd;
         }
         
         // operatorul +
-        public void plus()
+        public void Plus()
         {
-            int newStart = stateCount++;
-            int newEnd = stateCount++;
+            int newStart = StateCount++;
+            int newEnd = StateCount++;
             
-            transitions.Add(new Transition(newStart, initialState, lambda));
-            transitions.Add(new Transition(finalState, newEnd, lambda));
-            transitions.Add(new Transition(finalState, initialState, lambda));
+            Transitions.Add(new Transition(newStart, InitialState, Lambda));
+            Transitions.Add(new Transition(FinalState, newEnd, Lambda));
+            Transitions.Add(new Transition(FinalState, InitialState, Lambda));
 
-            initialState = newStart;
-            finalState = newEnd;
+            InitialState = newStart;
+            FinalState = newEnd;
         }
     }
 }

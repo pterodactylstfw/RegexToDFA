@@ -2,15 +2,15 @@
 {
     public class Transition
     {
-        public int fromState { get; set; }
-        public int toState { get; set; }
-        public char symbol { get; set; }
+        public int FromState { get; set; }
+        public int ToState { get; set; }
+        public char Symbol { get; set; }
         
         public Transition(int fromState, int toState, char symbol)
         {
-            this.fromState = fromState;
-            this.toState = toState;
-            this.symbol = symbol;
+            this.FromState = fromState;
+            this.ToState = toState;
+            this.Symbol = symbol;
         }
     }
 }

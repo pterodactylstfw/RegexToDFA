@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace RegexToDFA
@@ -18,7 +17,7 @@ namespace RegexToDFA
          7  + . a
          8  + . ( 
          * */
-        public static string concatenationHandle(string regex)
+        public static string ConcatenationHandle(string regex)
         {
             string output = "";
             for (int i = 0; i < regex.Length; i++)
@@ -40,7 +39,7 @@ namespace RegexToDFA
         }
 
         // functie cu ajutorul careia setam precedenta operatorilor
-        private static int getPrecedence(char op)
+        private static int GetPrecedence(char op)
         {
             switch (op)
             {
@@ -53,7 +52,7 @@ namespace RegexToDFA
         }
 
         // functie care face transformarea in forma poloneza postfixata
-        public static string toPostfixForm(string regex)
+        public static string ToPostfixForm(string regex)
         {
             string output = "";
             // creem o stiva de operatori
@@ -79,7 +78,7 @@ namespace RegexToDFA
                     /* In cazul in care gasim un operator, verificam precedenta.
                      Scoatem din stiva si adaugam in forma finala daca in stiva se afla un operator
                      cu precedenta mai mare decat operatorul curent. */
-                    while(operators.Count > 0 && getPrecedence(operators.Peek()) >= getPrecedence(c))
+                    while(operators.Count > 0 && GetPrecedence(operators.Peek()) >= GetPrecedence(c))
                         output += operators.Pop();
                     operators.Push(c);
                 }
@@ -94,19 +93,19 @@ namespace RegexToDFA
 
         public class TreeNode
         {
-            public char symbol { get; set; }
-            public TreeNode left { get; set; }
-            public TreeNode right { get; set; }
+            public char Symbol { get; set; }
+            public TreeNode Left { get; set; }
+            public TreeNode Right { get; set; }
             
             public TreeNode(char symb, TreeNode l = null, TreeNode r = null)
             {
-                symbol = symb;
-                left = l;
-                right = r;
+                Symbol = symb;
+                Left = l;
+                Right = r;
             }
         }
 
-        public static TreeNode syntaxTree(string regexPostfix)
+        public static TreeNode SyntaxTree(string regexPostfix)
         {
             Stack<TreeNode> stack = new Stack<TreeNode>();
 
@@ -130,7 +129,7 @@ namespace RegexToDFA
             return stack.Pop();
         }
 
-        public static void printSyntaxTree(TreeNode root, string indent = "", bool isLast = true)
+        public static void PrintSyntaxTree(TreeNode root, string indent = "", bool isLast = true)
         {
             if (root != null)
             {
@@ -145,9 +144,9 @@ namespace RegexToDFA
                     Console.Write("├─");
                     indent += "| ";
                 }
-                Console.WriteLine(root.symbol);
-                printSyntaxTree(root.left, indent, root.right == null);
-                printSyntaxTree(root.right, indent, true);
+                Console.WriteLine(root.Symbol);
+                PrintSyntaxTree(root.Left, indent, root.Right == null);
+                PrintSyntaxTree(root.Right, indent, true);
                 
             }
         }

@@ -5,9 +5,9 @@ namespace RegexToDFA
 {
     public class RegexToLambdaAutomaton
     {
-        public static LambdaAutomaton build(string regexPostfix)
+        public static LambdaAutomaton Build(string regexPostfix)
         {
-            LambdaAutomaton.resetStateCount();
+            LambdaAutomaton.ResetStateCount();
             Stack<LambdaAutomaton> automatonStack = new Stack<LambdaAutomaton>();
 
             foreach (char c in regexPostfix)
@@ -24,25 +24,25 @@ namespace RegexToDFA
                 {
                     LambdaAutomaton right = automatonStack.Pop();
                     LambdaAutomaton left = automatonStack.Pop();
-                    automatonStack.Push(LambdaAutomaton.concatenation(left, right));
+                    automatonStack.Push(LambdaAutomaton.Concatenation(left, right));
                 }
                 else if (c == '*')
                 {
                     LambdaAutomaton automaton = automatonStack.Pop();
-                    automaton.kleeneStar();
+                    automaton.KleeneStar();
                     automatonStack.Push(automaton);
                 }
                 else if (c == '+')
                 {
                     LambdaAutomaton automaton = automatonStack.Pop();
-                    automaton.plus();
+                    automaton.Plus();
                     automatonStack.Push(automaton);
                 }
             }
             if (automatonStack.Count > 0)
                 return automatonStack.Pop();
-            else
-                return null;
+            
+            return null;
         }
     }
 }

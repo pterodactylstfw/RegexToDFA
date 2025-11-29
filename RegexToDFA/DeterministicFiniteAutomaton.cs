@@ -7,41 +7,33 @@ namespace RegexToDFA
     public class DeterministicFiniteAutomaton
     {
 
-        public HashSet<int> states { get; set; }
-        public HashSet<char> symbols { get; set; }
-        public List<Transition> transitions { get; set; }
-        public int initialState { get; set; }
-        public HashSet<int> finalStates { get; set; }
+        public HashSet<int> States { get; set; } = new HashSet<int>();
+        public HashSet<char> Symbols { get; set; } = new HashSet<char>();
+        public List<Transition> Transitions { get; set; } = new List<Transition>();
+        public int InitialState { get; set; }
+        public HashSet<int> FinalStates { get; set; } = new HashSet<int>();
 
-        public DeterministicFiniteAutomaton()
+
+        public bool VerifyAutomaton()
         {
-            states = new HashSet<int>();
-            symbols = new HashSet<char>();
-            transitions = new List<Transition>();
-            finalStates = new HashSet<int>();
-        }
-
-
-        public bool verifyAutomaton()
-        {
-            if (!states.Contains(initialState)) return false;
-            if(!finalStates.IsSubsetOf(states)) return false;
+            if (!States.Contains(InitialState)) return false;
+            if(!FinalStates.IsSubsetOf(States)) return false;
             
-            foreach (var transition in transitions)
+            foreach (var transition in Transitions)
             {
-                if (!states.Contains(transition.fromState)) return false;
-                if (!states.Contains(transition.toState)) return false;
-                if (!symbols.Contains(transition.symbol)) return false;
+                if (!States.Contains(transition.FromState)) return false;
+                if (!States.Contains(transition.ToState)) return false;
+                if (!Symbols.Contains(transition.Symbol)) return false;
             }
             return true;
             
         }
 
-        public void printAutomaton()
+        public void PrintAutomaton()
         {
             // ordonam simbolurile si starile pentru afisare
-            var sortedSymbols = symbols.OrderBy(s => s).ToList();
-            var sortedStates = states.OrderBy(s => s).ToList();
+            var sortedSymbols = Symbols.OrderBy(s => s).ToList();
+            var sortedStates = States.OrderBy(s => s).ToList();
             
             Console.Write($"{"State", -8} |"); 
             foreach (var sym in sortedSymbols)
@@ -54,8 +46,8 @@ namespace RegexToDFA
             foreach (var state in sortedStates)
             {
                 string prefix = "";
-                if (state == initialState) prefix += "->"; // start
-                if (finalStates.Contains(state)) prefix += "*"; // final
+                if (state == InitialState) prefix += "->"; // start
+                if (FinalStates.Contains(state)) prefix += "*"; // final
         
                 string stateLabel = prefix + state.ToString();
                 Console.Write($"{stateLabel, -8} |");
@@ -63,10 +55,10 @@ namespace RegexToDFA
                 foreach (var sym in sortedSymbols)
                 {
                     // verificam daca exista tranzitie pentru simbolul curent
-                    var transition = transitions.FirstOrDefault(t => t.fromState == state && t.symbol == sym);
+                    var transition = Transitions.FirstOrDefault(t => t.FromState == state && t.Symbol == sym);
                     if (transition != null)
                     {
-                        Console.Write($" {transition.toState, -5} |");
+                        Console.Write($" {transition.ToState, -5} |");
                     }
                     else
                     {
@@ -77,21 +69,21 @@ namespace RegexToDFA
             }
         }
 
-        public bool checkWord(String word)
+        public bool CheckWord(String word)
         {
-            int currentState = initialState;
+            int currentState = InitialState;
 
             foreach (char c in word)
             {
-                var transition = transitions.FirstOrDefault(t => t.fromState == currentState && t.symbol == c);
+                var transition = Transitions.FirstOrDefault(t => t.FromState == currentState && t.Symbol == c);
                 if (transition == null)
                 {
                     return false; 
                 }
-                currentState = transition.toState;
+                currentState = transition.ToState;
             }
 
-            return finalStates.Contains(currentState);
+            return FinalStates.Contains(currentState);
         }
         
     }

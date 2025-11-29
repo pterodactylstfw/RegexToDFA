@@ -5,29 +5,29 @@ namespace RegexToDFA
 {
     public class LambdaAutomatonToDFA
     {
-        public static DeterministicFiniteAutomaton dfa(LambdaAutomaton lambdaAutomaton)
+        public static DeterministicFiniteAutomaton Build(LambdaAutomaton lambdaAutomaton)
         {
             DeterministicFiniteAutomaton dfa = new DeterministicFiniteAutomaton();
 
-            foreach (var transition in lambdaAutomaton.transitions)
+            foreach (var transition in lambdaAutomaton.Transitions)
             {
-                if (transition.symbol != LambdaAutomaton.lambda)
-                    dfa.symbols.Add(transition.symbol);
+                if (transition.Symbol != LambdaAutomaton.Lambda)
+                    dfa.Symbols.Add(transition.Symbol);
             }
             
             Dictionary<string, int> dfaStateMap = new Dictionary<string, int>();
             Queue<HashSet<int>> queue = new Queue<HashSet<int>>();
             
-            HashSet<int> startSet = getLambdaClosure(lambdaAutomaton.initialState, lambdaAutomaton.transitions);
+            HashSet<int> startSet = GetLambdaClosure(lambdaAutomaton.InitialState, lambdaAutomaton.Transitions);
             string startKey = GetSetKey(startSet);
             
             int countDfaState = 0;
             dfaStateMap[startKey] = countDfaState;
-            dfa.states.Add(countDfaState);
-            dfa.initialState = countDfaState;
-            if (startSet.Contains(lambdaAutomaton.finalState))
+            dfa.States.Add(countDfaState);
+            dfa.InitialState = countDfaState;
+            if (startSet.Contains(lambdaAutomaton.FinalState))
             {
-                dfa.finalStates.Add(countDfaState);
+                dfa.FinalStates.Add(countDfaState);
             }
             
             countDfaState++;
@@ -38,15 +38,15 @@ namespace RegexToDFA
                 HashSet<int> currentSet = queue.Dequeue();
                 int currentDfaId = dfaStateMap[GetSetKey(currentSet)];
 
-                foreach (var symbol in dfa.symbols)
+                foreach (var symbol in dfa.Symbols)
                 {
                     HashSet<int> foundStates = new HashSet<int>();
 
-                    foreach (var transition in lambdaAutomaton.transitions)
+                    foreach (var transition in lambdaAutomaton.Transitions)
                     {
-                        if (transition.symbol == symbol && currentSet.Contains(transition.fromState))
+                        if (transition.Symbol == symbol && currentSet.Contains(transition.FromState))
                         {
-                            foundStates.Add(transition.toState);
+                            foundStates.Add(transition.ToState);
                         }
                     }
 
@@ -55,7 +55,7 @@ namespace RegexToDFA
                         HashSet<int> newSet = new HashSet<int>();
                         foreach (int state in foundStates)
                         {
-                            newSet.UnionWith(getLambdaClosure(state,  lambdaAutomaton.transitions));
+                            newSet.UnionWith(GetLambdaClosure(state,  lambdaAutomaton.Transitions));
                         }
                         
                         string newStateKey = GetSetKey(newSet);
@@ -71,16 +71,16 @@ namespace RegexToDFA
                             dfaStateMap.Add(newStateKey, nextStateId);
                             queue.Enqueue(newSet);
                             
-                            if (newSet.Contains(lambdaAutomaton.finalState))
+                            if (newSet.Contains(lambdaAutomaton.FinalState))
                             {
-                                dfa.finalStates.Add(nextStateId);
+                                dfa.FinalStates.Add(nextStateId);
                             }
-                            dfa.states.Add(nextStateId);
+                            dfa.States.Add(nextStateId);
                             
                             countDfaState++;
                         }
                         
-                        dfa.transitions.Add(new Transition(currentDfaId, nextStateId, symbol));
+                        dfa.Transitions.Add(new Transition(currentDfaId, nextStateId, symbol));
                     }
                 }
             }
@@ -88,7 +88,7 @@ namespace RegexToDFA
             return dfa;
         }
 
-        private static HashSet<int> getLambdaClosure(int state, List<Transition> transitions)
+        private static HashSet<int> GetLambdaClosure(int state, List<Transition> transitions)
         {
             HashSet<int> lambdaClosure = new HashSet<int>();
             Stack<int> stack = new Stack<int>();
@@ -100,12 +100,12 @@ namespace RegexToDFA
                 int currentState = stack.Pop();
                 foreach (var transition in transitions)
                 {
-                    if (transition.fromState == currentState && transition.symbol == LambdaAutomaton.lambda)
+                    if (transition.FromState == currentState && transition.Symbol == LambdaAutomaton.Lambda)
                     {
-                        if (!lambdaClosure.Contains(transition.toState))
+                        if (!lambdaClosure.Contains(transition.ToState))
                         {
-                            lambdaClosure.Add(transition.toState);
-                            stack.Push(transition.toState);
+                            lambdaClosure.Add(transition.ToState);
+                            stack.Push(transition.ToState);
                         }
                     }
                 }
