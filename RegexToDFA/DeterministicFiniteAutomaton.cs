@@ -93,5 +93,6 @@ namespace RegexToDFA
 
             return finalStates.Contains(currentState);
         }
+        
     }
 }
